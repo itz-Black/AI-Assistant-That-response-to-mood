@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saarthi AI: Live Voice Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* CSS adapted for a Voice Assistant Interface */
+        :root {
+            --color-dark-navy: #0A192F;
+            --color-navy-light: #172A45;
+            --color-blue-accent: #64FFDA;
+            --color-orange-accent: #F97316;
+            --color-white: #E6F1FF;
+            --color-gray-text: #8892B0;
+            --font-primary: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background-color: var(--color-dark-navy);
+            color: var(--color-white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 750px;
+            height: 90vh;
+            background-color: var(--color-navy-light);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--color-blue-accent);
+        }
+
+        /* Responsive Header & Status */
+        .app-header {
+            background-color: var(--color-dark-navy);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--color-blue-accent);
+        }
+
+        .saarthi-info h2 {
+            font-size: 1.5rem;
+            color: var(--color-orange-accent);
+        }
+
+        .status-indicators {
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .status-indicators span {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--color-gray-text);
+        }
+
+        .status-indicators .icon {
+            margin-right: 5px;
+        }
+
+        #detected-emotion {
+            font-weight: 700;
+            color: var(--color-blue-accent);
+        }
+
+        /* Conversation Window */
+        .chat-window {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            max-width: 90%;
+            padding: 15px;
+            border-radius: 12px;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        .saarthi-message {
+            background-color: rgba(100, 255, 218, 0.1);
+            color: var(--color-white);
+            align-self: flex-start;
+            border-left: 4px solid var(--color-blue-accent);
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .saarthi-message strong {
+            color: var(--color-blue-accent);
+        }
+
+        .user-message {
+            background-color: var(--color-orange-accent);
+            color: var(--color-dark-navy);
+            align-self: flex-end;
+            border-right: 4px solid var(--color-orange-accent);
+            font-style: italic;
+        }
+        
+        /* Input Controls */
+        .input-controls {
+            padding: 20px;
+            border-top: 1px solid var(--color-dark-navy);
+            background-color: var(--color-dark-navy);
+            text-align: center;
+        }
+
+        .mic-button {
+            background-color: var(--color-orange-accent);
+            color: var(--color-dark-navy);
+            border: none;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            font-size: 2rem;
+            animation: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .mic-button:hover:not(.listening) {
+            background-color: var(--color-blue-accent);
+            transform: scale(1.05);
+        }
+        
+        .mic-button.listening {
+            background-color: var(--color-blue-accent);
+            color: var(--color-white);
+            animation: pulse-listening 1s infinite alternate;
+        }
+
+        #status-display {
+            margin-top: 10px;
+            color: var(--color-gray-text);
+            font-size: 0.9rem;
+            min-height: 18px;
+        }
+
+        /* Alert Box */
+        .alert-box {
+            background-color: rgba(249, 115, 22, 0.9);
+            color: var(--color-dark-navy);
+            padding: 10px;
+            text-align: center;
+            font-weight: 700;
+            animation: pulse-alert 1s infinite alternate;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .app-container {
+                height: 95vh;
+            }
+            .app-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .status-indicators {
+                text-align: left;
+                margin-top: 10px;
+            }
+            .mic-button {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse-listening {
+            from { box-shadow: 0 0 0 0 rgba(100, 255, 218, 0.7); }
+            to { box-shadow: 0 0 10px 10px rgba(100, 255, 218, 0); }
+        }
+
+        @keyframes pulse-alert {
+            from { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
+            to { box-shadow: 0 0 10px 10px rgba(249, 115, 22, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="app-header">
+            <div class="saarthi-info">
+                <h2>Saarthi VOICE Assistant</h2>
+                <p style="color: var(--color-blue-accent); font-size: 0.85rem;">Mode: Live Voice Interaction | Offline Edge</p>
+            </div>
+            <div class="status-indicators">
+                <span id="comm-status"><i class="fas fa-satellite-dish icon" style="color: var(--color-orange-accent);"></i>Alert Link: Operational</span>
+                <span id="detected-emotion"><i class="fas fa-headset icon" style="color: var(--color-blue-accent);"></i>**Ready to Talk**</span>
+            </div>
+        </div>
+
+        <div class="chat-window" id="chat-window">
+            <div class="message saarthi-message initial-message">
+                <strong>Saarthi:</strong> Welcome back, Commander. My systems are nominal. Please press the microphone button to begin speaking.
+            </div>
+        </div>
+
+        <div class="input-controls">
+            <button class="mic-button" id="mic-btn" onclick="toggleSpeechRecognition()">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <div id="status-display">Press the microphone to begin the conversation.</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const emotionStatus = document.getElementById('detected-emotion');
+        const commStatus = document.getElementById('comm-status');
+        const micButton = document.getElementById('mic-btn');
+        const statusDisplay = document.getElementById('status-display');
+        
+        // --- Web Speech API Setup ---
+        window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        window.SpeechSynthesis = window.SpeechSynthesis || window.webkitSpeechSynthesis;
+
+        let recognition;
+        let synthesis = window.speechSynthesis;
+        let isListening = false;
+        let isSpeaking = false;
+        let saarthiVoice = null;
+        let recognitionError = false; 
+
+        synthesis.onvoiceschanged = () => {
+            saarthiVoice = synthesis.getVoices().find(voice => 
+                voice.name.includes('Google US English') || voice.name.includes('Alex') || voice.lang.includes('en-US')
+            ) || synthesis.getVoices()[0];
+        };
+
+        // --- Saarthi Logic: Responses ---
+        const saarthiResponses = {
+            'neutral': [
+                "Understood, Commander. What task requires your primary focus now?",
+                "Noted. I'm here to assist with any cognitive or scheduling needs."
+            ],
+            'focused': [
+                "Your tone indicates concentration. I'll maintain a silent monitoring state. Report any immediate needs verbally.",
+                "Acknowledged. That drive is critical for exploration. I will log your current progress."
+            ],
+            'tiredness': [
+                "Commander, my analysis suggests fatigue. **Recommendation: Initiate Rest Protocol.** Shall I guide a brief relaxation exercise?",
+                "You've exceeded the recommended active period. Your well-being is paramount."
+            ],
+            'anxiety': [
+                "I detect an elevated stress signature. Please take a controlled breath. Can you articulate the specific challenge causing this tension?",
+                "It's valid to feel this way. Let's try a reframing exercise: 'What is the next single, smallest step I can take right now?'"
+            ],
+            'distress': [
+                "**CRITICAL PSYCHOLOGICAL STATE DETECTED.** Initiating emergency support protocol. Saarthi is transmitting immediate situation data to Ground Control.",
+                "We must stabilize your immediate state. I am initiating a guided emergency breathing sequence. Follow my vocal cues precisely."
+            ]
+        };
+        
+        // --- Core Functions ---
+        
+        function getSimulatedEmotion(text) {
+            const lowerText = text.toLowerCase();
+            if (lowerText.includes('help') || lowerText.includes('panic') || lowerText.includes('cannot') || lowerText.includes('fail')) {
+                return 'distress';
+            }
+            if (lowerText.includes('stress') || lowerText.includes('worry') || lowerText.includes('difficult') || lowerText.includes('overwhelmed')) {
+                return 'anxiety';
+            }
+            if (lowerText.includes('tired') || lowerText.includes('sleep') || lowerText.includes('low energy') || lowerText.includes('long day')) {
+                return 'tiredness';
+            }
+            if (lowerText.includes('analyze') || lowerText.includes('data') || lowerText.includes('report') || lowerText.includes('progress') || lowerText.includes('status')) {
+                return 'focused';
+            }
+            return 'neutral';
+        }
+
+        function appendMessage(text, sender) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', `${sender}-message`);
+            
+            if (sender === 'saarthi') {
+                msgDiv.innerHTML = `<strong>Saarthi:</strong> ${text}`;
+            } else {
+                msgDiv.textContent = `User (Transcription): "${text}"`;
+            }
+            
+            chatWindow.appendChild(msgDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        async function speak(text) {
+            return new Promise((resolve) => {
+                if (synthesis.speaking) synthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.voice = saarthiVoice;
+                utterance.rate = 0.9;
+                
+                isSpeaking = true;
+                utterance.onend = () => {
+                    isSpeaking = false;
+                    resolve();
+                };
+                utterance.onerror = (e) => {
+                    console.error('Speech synthesis error:', e);
+                    isSpeaking = false;
+                    resolve();
+                };
+                synthesis.speak(utterance);
+            });
+        }
+        
+       function updateStatus(emotion) {
+    // FIX: Replaced the broken 'var2' reference with correct CSS variable strings.
+    const color = emotion === 'distress' ? 'red' : emotion === 'anxiety' ? 'var(--color-orange-accent)' : 'var(--color-blue-accent)';
+    
+    let iconClass = "fa-headset"; // Default icon
+    if (emotion === 'distress' || emotion === 'anxiety') iconClass = "fa-face-frown";
+    if (emotion === 'tiredness') iconClass = "fa-face-tired";
+    if (emotion === 'focused' || emotion === 'neutral') iconClass = "fa-face-smile";
+
+    emotionStatus.innerHTML = `<i class="fas ${iconClass} icon" style="color: ${color};"></i>Mood: <strong>${emotion.charAt(0).toUpperCase() + emotion.slice(1)}</strong> (Simulated)`;
+    
+    const existingAlert = document.querySelector('.alert-box');
+    if (emotion === 'distress') {
+        commStatus.innerHTML = `<i class="fas fa-satellite-dish icon" style="color: var(--color-orange-accent);"></i>Alert Link: <strong>CRITICAL</strong>`;
+        if (!existingAlert) {
+            const alertBox = document.createElement('div');
+            alertBox.classList.add('alert-box');
+            alertBox.textContent = "CRITICAL ALERT: HIGH DISTRESS DETECTED. TRANSMITTING DATA TO GROUND CONTROL.";
+            document.querySelector('.app-container').insertBefore(alertBox, document.querySelector('.app-header').nextSibling);
+        }
+    } else {
+        commStatus.innerHTML = `<i class="fas fa-satellite-dish icon" style="color: var(--color-orange-accent);"></i>Alert Link: Operational`;
+        if (existingAlert) existingAlert.remove();
+    }
+}
+        
+        async function saarthiRespond(userText) {
+            // 1. Determine Simulated Emotion
+            const detectedEmotion = getSimulatedEmotion(userText);
+            
+            // 2. Update Status and Alerts
+            updateStatus(detectedEmotion);
+            
+            // 3. Select and Speak Response
+            const saarthiMsg = saarthiResponses[detectedEmotion][Math.floor(Math.random() * saarthiResponses[detectedEmotion].length)];
+            
+            appendMessage(`[Detected Emotion: ${detectedEmotion.toUpperCase()}] ${saarthiMsg}`, 'saarthi');
+            
+            await speak(saarthiMsg);
+            
+            // 4. Restart listening loop ONLY AFTER speaking is finished
+            startRecognition();
+        }
+
+        // --- Web Speech API Logic ---
+
+        function initializeRecognition() {
+            if (!SpeechRecognition) {
+                statusDisplay.textContent = "Error: Web Speech API not supported. Use Chrome or Edge.";
+                return;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.continuous = false; // Listen per turn
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                isListening = true;
+                recognitionError = false;
+                micButton.classList.add('listening');
+                statusDisplay.textContent = 'LISTENING... Speak now.';
+            };
+
+            recognition.onresult = (event) => {
+                // Stop the recognition loop before responding to prevent overlap
+                recognition.onend = null; 
+                recognition.stop(); 
+                isListening = false;
+                
+                const transcript = event.results[0][0].transcript;
+                appendMessage(transcript, 'user');
+                statusDisplay.textContent = 'Processing...';
+                saarthiRespond(transcript);
+            };
+            
+            recognition.onspeechend = () => {
+                // If user stops talking, recognition will automatically stop and fire onend
+                if (isListening) {
+                   recognition.stop();
+                }
+            }
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                recognitionError = true; 
+                isListening = false;
+                micButton.classList.remove('listening');
+                statusDisplay.textContent = `Error: ${event.error}. Click mic to retry.`;
+                // Don't auto-restart on error to prevent infinite loops
+            };
+            
+            recognition.onend = () => {
+                isListening = false;
+                micButton.classList.remove('listening');
+                
+                // If recognition ended without a result and no major error, it usually means silence/timeout.
+                // We should only restart listening if Saarthi isn't currently speaking and there wasn't a critical error.
+                if (!isSpeaking && !recognitionError) {
+                    statusDisplay.textContent = 'Input timeout. Click mic to speak again.';
+                }
+            };
+        }
+
+        function startRecognition() {
+            if (synthesis.speaking) {
+                // Wait for the AI to finish speaking
+                statusDisplay.textContent = 'Saarthi is speaking... Please wait.';
+                return; 
+            }
+            if (isListening) {
+                // Already listening, stop to give a result
+                recognition.stop();
+                return;
+            }
+            
+            try {
+                // Reset onend handler to prevent instant loops before starting
+                if (recognition) recognition.onend = () => { isListening = false; micButton.classList.remove('listening'); statusDisplay.textContent = 'Input timeout. Click mic to speak again.'; };
+                
+                if (!recognition) initializeRecognition();
+                recognition.start();
+            } catch (e) {
+                console.error('Recognition start failed:', e);
+                statusDisplay.textContent = 'Microphone blocked or not supported. Check permissions.';
+            }
+        }
+
+        function toggleSpeechRecognition() {
+            if (isSpeaking) {
+                 // Cancel Saarthi's speech if user interrupts
+                 synthesis.cancel(); 
+                 isSpeaking = false;
+                 // After interrupting, immediately start listening
+                 startRecognition(); 
+                 return;
+            }
+            
+            if (isListening) {
+                // User clicked to manually stop listening/submit input
+                recognition.stop();
+            } else {
+                // User clicked to start listening
+                startRecognition();
+            }
+        }
+        
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+             // Initial status update
+             updateStatus('neutral');
+
+             // Speak initial welcome message
+             const welcomeMsgElement = document.querySelector('.initial-message strong');
+             if (welcomeMsgElement) {
+                 const text = welcomeMsgElement.textContent.replace('Saarthi:', '').trim();
+                 speak(text);
+             }
+             // Initialize recognition object
+             initializeRecognition();
+        });
+    </script>
+</body>
+</html>

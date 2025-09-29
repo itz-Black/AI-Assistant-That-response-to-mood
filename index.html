@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saarthi: AI Companion for Astronaut Well-being</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+   
+    <style>
+        :root {
+            --color-dark-navy: #0A192F;
+            --color-navy-light: #172A45;
+            --color-blue-accent: #64FFDA;
+            --color-orange-accent: #F97316;
+            --color-white: #E6F1FF;
+            --color-gray-text: #8892B0;
+            --font-primary: 'Inter', sans-serif;
+            --font-headings: 'Orbitron', sans-serif;
+        }
+
+        /* General Body & Reset */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background-color: var(--color-dark-navy);
+            color: var(--color-gray-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h1, h2, h3 {
+            font-family: var(--font-headings);
+            color: var(--color-white);
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--color-blue-accent);
+        }
+
+        .section {
+            padding: 6rem 0;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: rgba(10, 25, 47, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--color-navy-light);
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-headings);
+            font-size: 1.5rem;
+            color: var(--color-blue-accent);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .navbar nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .navbar nav a {
+            color: var(--color-gray-text);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .navbar nav a:hover {
+            color: var(--color-blue-accent);
+        }
+
+        .nav-cta-btn {
+            background-color: transparent;
+            border: 1px solid var(--color-blue-accent);
+            color: var(--color-blue-accent) !important;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .nav-cta-btn:hover {
+            background-color: rgba(100, 255, 218, 0.1);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding-top: 80px; /* Navbar height */
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+        }
+
+        /* Animated Starfield Background */
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 50%;
+            width: 100%; height: 100%;
+            background-image:
+                radial-gradient(white, rgba(255,255,255,0) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,0) 1px, transparent 30px),
+                radial-gradient(white, rgba(255,255,255,0) 2px, transparent 40px),
+                radial-gradient(rgba(255,255,255,.4), rgba(255,255,255,0) 2px, transparent 30px);
+            background-repeat: repeat;
+            background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px;
+            background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
+            transform: translateX(-50%);
+            animation: stars 200s linear infinite;
+            opacity: 0.15;
+        }
+        @keyframes stars {
+            from { transform: translateY(0px) translateX(-50%); }
+            to { transform: translateY(-2000px) translateX(-50%); }
+        }
+
+
+        .hero-content {
+            z-index: 1;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem); /* Responsive font size */
+            color: var(--color-white);
+            line-height: 1.2;
+        }
+
+        .mission-statement {
+            font-size: 1.25rem;
+            color: var(--color-blue-accent);
+            margin: 1.5rem 0 2.5rem;
+        }
+
+        .cta-group {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap; /* For responsiveness */
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .primary-btn {
+            background-color: var(--color-orange-accent);
+            color: var(--color-dark-navy);
+            border: 2px solid var(--color-orange-accent);
+        }
+        .primary-btn:hover {
+            background-color: transparent;
+            color: var(--color-orange-accent);
+        }
+
+        .secondary-btn {
+            background-color: transparent;
+            color: var(--color-blue-accent);
+            border: 2px solid var(--color-blue-accent);
+        }
+        .secondary-btn:hover {
+            background-color: rgba(100, 255, 218, 0.1);
+        }
+
+        /* Feature Section */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background-color: var(--color-navy-light);
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid transparent;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            border-bottom: 3px solid var(--color-blue-accent);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--color-blue-accent);
+            box-shadow: 0 10px 30px rgba(100, 255, 218, 0.1);
+        }
+
+        .icon-lg {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .orange { color: var(--color-orange-accent); }
+        .blue { color: var(--color-blue-accent); }
+        .white { color: var(--color-white); }
+        
+        /* Flow Section */
+        .flow-section { background-color: var(--color-dark-navy); }
+        .flow-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+        .flow-step {
+            text-align: center;
+            flex: 1;
+        }
+        .flow-arrow {
+            font-size: 2rem;
+            color: var(--color-blue-accent);
+        }
+        
+        /* Tech Section */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .tech-card {
+            background: var(--color-navy-light);
+            padding: 2rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-orange-accent);
+        }
+
+        /* About Section */
+        .about-section { background-color: var(--color-dark-navy); }
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        .about-content h3 { color: var(--color-blue-accent); }
+
+        /* Contact Section */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+        }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--color-gray-text); }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--color-navy-light);
+            border: 1px solid var(--color-gray-text);
+            border-radius: 4px;
+            color: var(--color-white);
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-blue-accent);
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.2);
+        }
+        .contact-info i { margin-right: 1rem; color: var(--color-blue-accent); }
+
+        /* Footer */
+        footer {
+            padding: 2rem 0;
+            background-color: var(--color-navy-light);
+            text-align: center;
+            color: var(--color-gray-text);
+        }
+        .social-links { margin: 1rem 0; }
+        .social-links a {
+            color: var(--color-gray-text);
+            margin: 0 0.5rem;
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+        .social-links a:hover { color: var(--color-blue-accent); }
+        
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Responsiveness --- */
+        @media (max-width: 768px) {
+            h2 { font-size: 2rem; }
+            .navbar .container { flex-direction: column; gap: 1rem; }
+            .navbar nav { flex-wrap: wrap; justify-content: center; }
+            
+            .flow-diagram {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            .flow-arrow { transform: rotate(90deg); }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container">
+            <a href="#home" class="logo">SAARTHI AI</a>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#technology">Technology</a>
+                <a href="#about">About</a>
+                <a href="#contact" class="nav-cta-btn">Contact Us</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="hero-section">
+            <div class="hero-content container">
+                <h1>Saarthi: AI Companion for Astronaut Well-being</h1>
+                <p class="mission-statement">Empowering astronaut mental and emotional resilience through real-time, adaptive AI support.</p>
+                <div class="cta-group">
+                    <a href="#features" class="btn secondary-btn">Explore the System</a>
+                    <a href="AI Assiatant ok.html" class="btn primary-btn">Try our Assistant</a> 
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="section features-section">
+            <div class="container">
+                <h2>Key Features</h2>
+                <div class="feature-grid">
+                    <div class="feature-card fade-in">
+                        <i class="fas fa-face-smile icon-lg orange"></i>
+                        <h3>Emotion Detection</h3>
+                        <p>Real-time analysis of vocal tone for psychological state monitoring.</p>
+                    </div>
+                    <div class="feature-card fade-in">
+                        <i class="fas fa-comments icon-lg blue"></i>
+                        <h3>Adaptive Conversations</h3>
+                        <p>Personalized, non-judgmental dialogue that adjusts based on the astronaut's detected mood.</p>
+                    </div>
+                    <div class="feature-card fade-in">
+                        <i class="fas fa-bell icon-lg white"></i>
+                        <h3>Critical Alerting System</h3>
+                        <p>Automatic, secure notification to Ground Control for high-risk psychological states.</p>
+                    </div>
+                    <div class="feature-card fade-in">
+                        <i class="fas fa-satellite-dish icon-lg orange"></i>
+                        <h3>Offline Operation</h3>
+                        <p>Deployed on optimized edge devices for full functionality even during communication blackouts.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="section flow-section">
+            <div class="container">
+                <h2>The Saarthi AI Flow</h2>
+                <div class="flow-diagram">
+                    <div class="flow-step input">
+                        <i class="fas fa-microphone-alt icon-lg"></i>
+                        <h4>Input</h4>
+                        <p>Microphone Audio Data</p>
+                    </div>
+                    <i class="fas fa-arrow-right flow-arrow"></i>
+                    <div class="flow-step analysis">
+                        <i class="fas fa-chart-line icon-lg"></i>
+                        <h4>Emotion Analysis</h4>
+                        <p>Vocal Tone Processing</p>
+                    </div>
+                    <i class="fas fa-arrow-right flow-arrow"></i>
+                    <div class="flow-step fusion">
+                        <i class="fas fa-brain icon-lg"></i>
+                        <h4>Contextual AI</h4>
+                        <p>State Interpretation</p>
+                    </div>
+                    <i class="fas fa-arrow-right flow-arrow"></i>
+                    <div class="flow-step dialog">
+                        <i class="fas fa-robot icon-lg"></i>
+                        <h4>Dialog System</h4>
+                        <p>Response Generation</p>
+                    </div>
+                    <i class="fas fa-arrow-right flow-arrow"></i>
+                    <div class="flow-step output">
+                        <i class="fas fa-handshake icon-lg"></i>
+                        <h4>Output</h4>
+                        <p>Adaptive Response or Alert</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="technology" class="section tech-section">
+            <div class="container">
+                <h2>Core Technology Stack</h2>
+                <div class="tech-grid">
+                    <div class="tech-card fade-in">
+                        <i class="fas fa-wave-square icon-lg orange"></i>
+                        <h3>Audio Recognition</h3>
+                        <p>Deep learning models trained on diverse emotional datasets for robust, real-time performance.</p>
+                    </div>
+                    <div class="tech-card fade-in">
+                        <i class="fas fa-microchip icon-lg blue"></i>
+                        <h3>Transformer Models</h3>
+                        <p>State-of-the-art architectures for interpreting vocal nuances and capturing psychological states.</p>
+                    </div>
+                    <div class="tech-card fade-in">
+                        <i class="fas fa-terminal icon-lg white"></i>
+                        <h3>Dialog Management</h3>
+                        <p>Context-aware system ensuring coherent, goal-oriented, and psychologically safe conversations.</p>
+                    </div>
+                    <div class="tech-card fade-in">
+                        <i class="fas fa-download icon-lg orange"></i>
+                        <h3>Embedded Deployment</h3>
+                        <p>Optimized models (ONNX/TFLite) for low-latency operation on space-grade, limited hardware.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="about" class="section about-section">
+            <div class="container">
+                <h2>About the Saarthi Project</h2>
+                <div class="about-content">
+                    <div class="problem">
+                        <h3>The Problem: Isolation & Risk</h3>
+                        <p>Long-duration space missions subject astronauts to extreme psychological stressors: prolonged isolation, communication lag, and physical confinement. This environment elevates the risk of depression and anxiety, posing a threat to mission success.</p>
+                    </div>
+                    <div class="mission">
+                        <h3>Our Mission: A Digital Lifeline</h3>
+                        <p>Saarthi (meaning 'Charioteer') is designed as a constant, non-intrusive presence. Our mission is to provide immediate, personalized psychological support, acting as an early warning system and a tool for self-managed mental health.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section contact-section">
+            <div class="container">
+                <h2>Get In Touch</h2>
+                <div class="contact-grid">
+                    <form class="contact-form">
+                        <div class="form-group"><label for="name">Name</label><input type="text" id="name" name="name" required></div>
+                        <div class="form-group"><label for="email">Email</label><input type="email" id="email" name="email" required></div>
+                        <div class="form-group"><label for="message">Message</label><textarea id="message" name="message" rows="5" required></textarea></div>
+                        <button type="submit" class="btn primary-btn">Send Message</button>
+                    </form>
+                    <div class="contact-info">
+                        <h3>Connect with the Team</h3>
+                        <p><i class="fas fa-map-marker-alt"></i> <strong>ISRO/BAS Headquarters</strong></p>
+                        <p>Bengaluru, Karnataka, India</p>
+                        <p><i class="fas fa-envelope"></i> contact@saarthi-ai.space</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Saarthi AI Project. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(element => {
+                observer.observe(element);
+            });
+        });
+    </script>
+</body>
+</html>
